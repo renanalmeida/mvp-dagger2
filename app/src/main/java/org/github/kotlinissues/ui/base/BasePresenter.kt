@@ -1,14 +1,9 @@
 package org.github.kotlinissues.ui.base
 
-abstract class BasePresenter<out V : BaseView>(protected val view: V) {
+interface BasePresenter<T> {
 
-    init {
-        inject()
-    }
+    fun subscribe()
 
-    abstract fun start()
+    fun unsubscribe()
 
-    private fun inject() {
-
-    }
 }
