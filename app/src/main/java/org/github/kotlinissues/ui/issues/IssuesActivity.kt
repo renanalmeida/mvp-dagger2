@@ -1,28 +1,27 @@
 package org.github.kotlinissues.ui.issues
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import dagger.android.support.DaggerAppCompatActivity
 import org.github.kotlinissues.R
-import org.github.kotlinissues.data.DataRepository
-import org.github.kotlinissues.data.remote.GithubApi
 import org.github.kotlinissues.databinding.ActivityIssueBinding
 import org.github.kotlinissues.model.Issue
+import javax.inject.Inject
 
-class IssuesActivity: AppCompatActivity(), IssuesContract.View{
-
+class IssuesActivity: DaggerAppCompatActivity(), IssuesContract.View{
 
     private lateinit var binding: ActivityIssueBinding
     private val issuesAdapter = IssuesAdapter()
-    private val presenter:IssuesPresenter by lazy {  IssuesPresenter(this,  DataRepository(GithubApi.create()))}
+
+    @Inject
+    lateinit var presenter:IssuesPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_issue)
         binding.adapter = issuesAdapter
-        presenter.subscribe()
+        presenter.subscribe(this)
     }
 
     override fun onDestroy() {
@@ -40,10 +39,6 @@ class IssuesActivity: AppCompatActivity(), IssuesContract.View{
 
     override fun showError(active: Boolean) {
         binding.showError = if(active) View.VISIBLE else View.GONE
-    }
-
-    override fun getContext(): Context {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

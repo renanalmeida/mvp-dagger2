@@ -5,12 +5,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.github.kotlinissues.data.IDataRepository
+import org.github.kotlinissues.di.ActivityScope
+import javax.inject.Inject
 
-class IssuesPresenter(val  view: IssuesContract.View, private val repository: IDataRepository): IssuesContract.Presenter {
+@ActivityScope
+class IssuesPresenter @Inject constructor( val repository: IDataRepository): IssuesContract.Presenter{
 
     private val mCompositeDisposable: CompositeDisposable by lazy { CompositeDisposable() }
+    private lateinit var mView: IssuesContract.View
 
-    override fun subscribe() {
+    override fun subscribe(view: IssuesContract.View) {
+        mView = view
         loadIssues()
     }
 
@@ -20,14 +25,14 @@ class IssuesPresenter(val  view: IssuesContract.View, private val repository: ID
 
     @SuppressLint("CheckResult")
     override fun loadIssues() {
-        view.setLoadingIndicator(true)
-        view.showError(false)
+        mView.setLoadingIndicator(true)
+        mView.showError(false)
         repository.getKotlinIssues().observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io()).subscribe( {
-                view.setLoadingIndicator(false)
-                view.showIssues(it)},{
-                view.setLoadingIndicator(false)
-                view.showError(true)
+                mView.setLoadingIndicator(false)
+                mView.showIssues(it)},{
+                mView.setLoadingIndicator(false)
+                mView.showError(true)
             })
     }
 
