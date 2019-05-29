@@ -6,7 +6,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
 import org.github.kotlinissues.RxImmediateSchedulerRule
-import org.github.kotlinissues.data.DataRepository
 import org.github.kotlinissues.data.IDataRepository
 import org.github.kotlinissues.model.Issue
 import org.junit.Before
@@ -34,7 +33,7 @@ class IssuesPresenterTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        mPresenter = IssuesPresenter(view, mockDataRepository)
+        mPresenter = IssuesPresenter( mockDataRepository)
     }
 
     @Test
@@ -42,7 +41,7 @@ class IssuesPresenterTest {
         val issues:List<Issue>  = mock()
         whenever(mockDataRepository.getKotlinIssues())
             .thenReturn(Observable.just(issues))
-        mPresenter.subscribe()
+        mPresenter.subscribe(view)
         verify(view, times(1)).showError(false)
         verify(view, times(1)).setLoadingIndicator(true)
     }
@@ -51,14 +50,11 @@ class IssuesPresenterTest {
     fun subscribeWithLoadError() {
         whenever(mockDataRepository.getKotlinIssues())
             .thenReturn(Observable.error( Exception()))
-        mPresenter.subscribe()
+        mPresenter.subscribe(view)
         verify(view, times(1)).showError(false)
         verify(view, times(1)).setLoadingIndicator(true)
         verify(view, times(1)).setLoadingIndicator(false)
         verify(view, times(1)).showError(true)
     }
 
-    @Test
-    fun unsubscribe() {
-    }
 }

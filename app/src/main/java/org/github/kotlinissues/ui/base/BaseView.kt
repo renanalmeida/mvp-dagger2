@@ -1,6 +1,4 @@
 package org.github.kotlinissues.ui.base
 
-import android.content.Context
 
-interface BaseView {
-}
+interface BaseView
